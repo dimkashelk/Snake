@@ -38,7 +38,6 @@ public class Board extends JPanel implements ActionListener {
         initGame();
     }
 
-
     private void initGame() {
         dots = 3;
         for (int z = 0; z < dots; z++) {
@@ -48,7 +47,6 @@ public class Board extends JPanel implements ActionListener {
         locateApple();
         timer = new Timer(DELAY, this);
         timer.start();
-
     }
 
     public void paint(Graphics g) {
@@ -71,5 +69,52 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    public void gameOver(Graphics g) {
+        String msg = new String("Game Over!");
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        FontMetrics metr = this.getFontMetrics(small);
+        g.setColor(Color.BLACK);
+        g.setFont(small);
+        g.drawString(msg, (WIDTH - metr.stringWidth(msg)) / 2, HEIGHT / 2);
+    }
+
+    public void checkApple() {
+        if (x[0] == apple_x && y[0] == apple_y) {
+            dots++;
+            locateApple();
+        }
+    }
+
+    public void move() {
+        for (int z = dots; z > 0; z--) {
+            x[z] = x[z - 1];
+            y[z] = y[z -1];
+        }
+        if (left)
+            x[0] -= DOT_SIZE;
+        if (right)
+            x[0] += DOT_SIZE;
+        if (up)
+            y[0] -= DOT_SIZE;
+        if (down)
+            y[1] += DOT_SIZE;
+    }
+
+    public void checkCollision() {
+        for (int z = dots; z > 3; z--) {
+            if (x[0] == x[z] && y[0] == y[z])
+                in_game = false;
+        }
+        if (y[0] > HEIGHT || y[0] < 0 || x[0] > WIDTH || x[0] < 0)
+            in_game = false;
+    }
+
+    public void locateApple() {
+        int r = (int) (Math.random() * RAND_POS);
+        apple_x = r * DOT_SIZE;
+        r = (int) (Math.random() * RAND_POS);
+        apple_y = r * DOT_SIZE;
     }
 }
