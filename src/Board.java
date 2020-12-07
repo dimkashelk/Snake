@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Board extends JPanel implements ActionListener {
     private final int WIDTH = 300;
@@ -25,7 +27,7 @@ public class Board extends JPanel implements ActionListener {
     private Image apple;
     private Image head;
 
-    private Board() {
+    Board() {
         addKeyListener(new TAdapter());
         setBackground(Color.WHITE);
         ImageIcon iid = new ImageIcon(this.getClass().getResource("red.png"));
@@ -68,7 +70,12 @@ public class Board extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if (in_game) {
+            checkApple();
+            checkCollision();
+            move();
+        }
+        repaint();
     }
 
     public void gameOver(Graphics g) {
@@ -94,12 +101,12 @@ public class Board extends JPanel implements ActionListener {
         }
         if (left)
             x[0] -= DOT_SIZE;
-        if (right)
+        else if (right)
             x[0] += DOT_SIZE;
-        if (up)
+        else if (up)
             y[0] -= DOT_SIZE;
-        if (down)
-            y[1] += DOT_SIZE;
+        else if (down)
+            y[0] += DOT_SIZE;
     }
 
     public void checkCollision() {
@@ -116,5 +123,29 @@ public class Board extends JPanel implements ActionListener {
         apple_x = r * DOT_SIZE;
         r = (int) (Math.random() * RAND_POS);
         apple_y = r * DOT_SIZE;
+    }
+
+    private class TAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            int key = e.getKeyCode();
+            if (key == KeyEvent.VK_UP && !down) {
+                up = true;
+                left = false;
+                right = false;
+            } else if (key == KeyEvent.VK_DOWN && !up) {
+                down = true;
+                left = false;
+                right = false;
+            } else if (key == KeyEvent.VK_RIGHT && !left) {
+                right = true;
+                up = false;
+                down = false;
+            } else if (key == KeyEvent.VK_LEFT && !right) {
+                left = true;
+                up = false;
+                down = false;
+            }
+        }
     }
 }
